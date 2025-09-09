@@ -20,8 +20,6 @@ describe('E-shop tests', () => {
         {'amount': 800.01, 'discount': 0.1},      // Partition 800-MAX DOUBLE: lower boundary value
         {'amount': 800.02, 'discount': 0.1},
         {'amount': 900.00, 'discount': 0.1},
-        {'amount': "900", 'discount': 0.1},       // Edge case: implies string to float conversion
-        {'amount': "900.01", 'discount': 0.1}     // Edge case: implies string to float conversion with decimals
     ];
     describe.each(eshopPassesProvider)('E-shop passes', (params) => {
         it(`${params.amount} kr passes`, () => {
@@ -32,6 +30,16 @@ describe('E-shop tests', () => {
     /**
      * Negative testing
      */
+    const eshopFailsProvider = [
+        {'amount': "900", 'discount': 0.1},       // Edge case: implies string to float conversion
+        {'amount': "900.01", 'discount': 0.1}     // Edge case: implies string to float conversion with decimals
+    ];
+    describe.each(eshopFailsProvider)('E-shop fails because of wrong data type', (params) => {
+        it(`${params.amount} kr passes`, () => {
+            expect(calculateDiscount(params.amount)).toBeCloseTo(params.discount);
+        });
+    });
+
     it('Wrong data type fails', () => {
         expect(() => calculateDiscount('Hello')).toThrow('Incorrect data type.');
     });
